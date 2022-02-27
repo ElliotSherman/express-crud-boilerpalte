@@ -47,12 +47,15 @@ app.get('/comments',(req,res)=>{
 app.get('/comments/new', (req,res)=>{
     res.render('comments/new')
 });
-// post the form 
+// post the data from the form and redirect the user to the comments display page
 app.post('/comments', (req,res)=>{
     const {username , comment} = req.body;
     comments.push({username,comment})
-    res.render('got new comment')
-})
+    // the redirect method generates a status code of 302 by default and the response will also include 
+    // the path (/comments) in the HEADER which the browser will use to make a new request
+    res.redirect('/comments');
+});
+
 // listening port - part of the boilerplate
 app.listen(3000,()=>{
     console.log('comments app is running');
