@@ -39,10 +39,20 @@ const comments = [
 
 ];
 // seting routes
+// route that displays comments
 app.get('/comments',(req,res)=>{
     res.render('comments/index',{comments})
 });
-
+// route to add new comments displays the form
+app.get('/comments/new', (req,res)=>{
+    res.render('comments/new')
+});
+// post the form 
+app.post('/comments', (req,res)=>{
+    const {username , comment} = req.body;
+    comments.push({username,comment})
+    res.render('got new comment')
+})
 // listening port - part of the boilerplate
 app.listen(3000,()=>{
     console.log('comments app is running');
