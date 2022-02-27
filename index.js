@@ -8,6 +8,10 @@
 // UPDATE -- PATCH/comments/:id - Updates specific comment on server 
 // DESTROY -- DELETE/comments/:id - Delete/Destroy one Comment on server
 
+// UUID - To create a random UUID use it with uuidv4();
+// FYI you can change the name uuidv4 to anything you like
+const { v4: uuidv4 } = require('uuid');
+
 // boilerplate setting begin
 const express = require('express');
 const app = express();
@@ -26,19 +30,19 @@ const comments = [
     {
         username:'elliot',
         comment:'never stop hustling!',
-        id:1,
+        id:uuidv4(),
     },{
         username:'mike',
         comment:'never quit',
-        id:2,
+        id:uuidv4(),
     },{
         username:'eminem',
         comment:'lose yourself!',
-        id:3,
+        id:uuidv4(),
     },{
         username:'future',
         comment:'you should have never doubted me!',
-        id:4,
+        id:uuidv4(),
     },
 
 ];
@@ -55,7 +59,7 @@ app.get('/comments/new', (req,res)=>{
 //CREATE post the data from the form and redirect the user to the comments display page 
 app.post('/comments', (req,res)=>{
     const {username , comment} = req.body;
-    comments.push({username,comment})
+    comments.push({username,comment, id:uuidv4()})
     // the redirect method generates a status code of 302 by default and the response will also include 
     // the path (/comments) in the HEADER which the browser will use to make a new request
     res.redirect('/comments');
@@ -65,7 +69,7 @@ app.get('/comments/:id', (req,res)=>{
     const {id} = req.params;
     // we get the id from the URL params and use the find method on the data we have to return that object
     // we used parseInt here to parse the id to an integer
-    const comment = comments.find(c=> c.id === parseInt(id));
+    const comment = comments.find(c=> c.id === id);
     res.render('comments/show', {comment});
 });
 
