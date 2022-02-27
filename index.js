@@ -25,29 +25,34 @@ app.set('view engine', 'ejs');
 const comments = [
     {
         username:'elliot',
-        comment:'never stop hustling!'
+        comment:'never stop hustling!',
+        id:1,
     },{
         username:'mike',
-        comment:'never quit'
+        comment:'never quit',
+        id:2,
     },{
         username:'eminem',
-        comment:'lose yourself!'
+        comment:'lose yourself!',
+        id:3,
     },{
         username:'future',
-        comment:'you should have never doubted me!'
+        comment:'you should have never doubted me!',
+        id:4,
     },
 
 ];
-// seting routes
-// route that displays comments
+// seting routes according to the pattern above
+
+//INDEX route that displays comments 
 app.get('/comments',(req,res)=>{
     res.render('comments/index',{comments})
 });
-// route to add new comments displays the form
+//NEW route to add new comments displays the form 
 app.get('/comments/new', (req,res)=>{
     res.render('comments/new')
 });
-// post the data from the form and redirect the user to the comments display page
+//CREATE post the data from the form and redirect the user to the comments display page 
 app.post('/comments', (req,res)=>{
     const {username , comment} = req.body;
     comments.push({username,comment})
@@ -55,8 +60,16 @@ app.post('/comments', (req,res)=>{
     // the path (/comments) in the HEADER which the browser will use to make a new request
     res.redirect('/comments');
 });
+// SHOW dispaly a specific comment by requesting the comments id 
+app.get('/comments/:id', (req,res)=>{
+    const {id} = req.params;
+    // we get the id from the URL params and use the find method on the data we have to return that object
+    // we used parseInt here to parse the id to an integer
+    const comment = comments.find(c=> c.id === parseInt(id));
+    res.render('comments/show', {comment});
+});
 
 // listening port - part of the boilerplate
 app.listen(3000,()=>{
     console.log('comments app is running');
-})
+});
