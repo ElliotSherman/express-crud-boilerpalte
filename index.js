@@ -16,6 +16,15 @@ const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const app = express();
 const path = require('path');
+// METHOD OVERRIDE needs to be installed for editing single values like comments as an example
+// since we cannot send a PATCH/PUT/DELETE requests from the browser, we must OVERRIDE it!
+// we can only send GET/POST requests, METHOD-OVERRIDE allows us to use these verbs where the client
+// doesnt support them!
+// we can override using a query value or we can also set a request HTTP HEADER
+// <form action="/comments/<%= comment.id %>/?_method=PATCH" method="post">
+// setting METHOD_OVERRIDE 
+const methodOverride = require('method-override');
+app.use(methodOverride('_method')); // _method is a convention but you can use any name
 
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
@@ -46,8 +55,8 @@ const comments = [
     },
 
 ];
+// CRUD boilerpalte and basics
 // seting routes according to the pattern above
-
 //INDEX route that displays comments 
 app.get('/comments',(req,res)=>{
     res.render('comments/index',{comments})
@@ -72,7 +81,26 @@ app.get('/comments/:id', (req,res)=>{
     const comment = comments.find(c=> c.id === id);
     res.render('comments/show', {comment});
 });
+// UPDATE -- PATCH edit a single comment
+app.get('/comments/:id/edit',(req,res)=>{
+    const {id} = req.params;
+    const comment = comments.find(c=> c.id === id);
+    res.render('comments/edit', {comment});
+})
+// we dont want to edit the id in this case, what we want to do is only edit the comment itself
+// the PATCH method is used to apply partial mods to a resource 
+// alternatively the PUT method (often to be confused with patch) repalces all current representations of the target resource with the request payload
+// in postman you can test patch requests
+// 
+app.patch('/comments/:id',(req,res)=>{
+    // res.send('udate') // before writing the following lines of code we can try this one in postman as a patch request and check it first
+    const {id} = req.params; // we take the id from the URL
+    const newCommentText = req.body.comment; // we take the new text -the payload
+    const editComment = comments.find(c=> c.id === id); // find the comment to update 
+    editComment.comment = newCommentText; // set the value of the property to new prop
+    res.redirect('/comments')
 
+})
 // listening port - part of the boilerplate
 app.listen(3000,()=>{
     console.log('comments app is running');
