@@ -16,6 +16,7 @@ const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const app = express();
 const path = require('path');
+
 // METHOD OVERRIDE needs to be installed for editing single values like comments as an example
 // since we cannot send a PATCH/PUT/DELETE requests from the browser, we must OVERRIDE it!
 // we can only send GET/POST requests, METHOD-OVERRIDE allows us to use these verbs where the client
@@ -35,7 +36,7 @@ app.set('view engine', 'ejs');
 // boilerplate settings end
 
 // setting an array of data
-const comments = [
+let comments = [
     {
         username:'elliot',
         comment:'never stop hustling!',
@@ -82,6 +83,7 @@ app.get('/comments/:id', (req,res)=>{
     res.render('comments/show', {comment});
 });
 // UPDATE -- PATCH edit a single comment
+// usese METHOD-OVERRIDE check for more details above
 app.get('/comments/:id/edit',(req,res)=>{
     const {id} = req.params;
     const comment = comments.find(c=> c.id === id);
@@ -101,6 +103,20 @@ app.patch('/comments/:id',(req,res)=>{
     res.redirect('/comments')
 
 })
+// PATCHING END
+
+// DESTROY -- DELETE 
+// a DELETE operation in this example uses a form to make the delete request
+{/* <form action="/comments/<%= comment.id %>/?_method=DELETE" method="post">
+<button>Delete</button>
+</form> */}
+app.delete('/comments/:id',(req,res)=>{
+    const {id} = req.params;
+    comments = comments.filter(c => c.id !== id); // filter out the comment to delete
+    res.redirect('/comments');
+})
+
+
 // listening port - part of the boilerplate
 app.listen(3000,()=>{
     console.log('comments app is running');
